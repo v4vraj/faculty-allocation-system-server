@@ -1,27 +1,24 @@
 const express = require("express");
-const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
-dotenv.config();
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const programRoutes = require("./routes/programRoutes");
 
 const app = express();
-
-// Middleware to parse JSON request bodies
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your frontend URL
-    credentials: true, // Allow cookies to be sent
+    origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 
-// Default route for health check
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "API is running successfully" });
-});
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/programs", programRoutes);
 
-// Start the Express server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
