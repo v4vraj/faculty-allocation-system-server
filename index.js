@@ -4,6 +4,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const programRoutes = require("./routes/programRoutes");
+const courseRoutes = require("./routes/courseRoutes");
 
 const app = express();
 app.use(cookieParser());
@@ -18,6 +19,7 @@ app.use(
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/programs", programRoutes);
+app.use("/courses", courseRoutes);
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
