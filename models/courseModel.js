@@ -37,9 +37,36 @@ const Course = {
       const [rows] = await db.execute(query);
       console.log(rows);
 
-      return rows; // Return the courses
+      return rows;
     } catch (err) {
       throw new Error("Error fetching courses: " + err.message);
+    }
+  },
+  updateCourseById: async (id, courseData) => {
+    console.log(courseData);
+    const fields = Object.keys(courseData)
+      .map((field) => `${field} = ?`)
+      .join(", ");
+    const values = [...Object.values(courseData), id];
+
+    const query = `UPDATE courses SET ${fields} WHERE id = ?`;
+    try {
+      const [result] = await db.execute(query, values);
+      return result;
+    } catch (error) {
+      console.error("Error updating course:", error);
+      throw error;
+    }
+  },
+
+  deleteCourseById: async (id) => {
+    const query = "DELETE FROM courses WHERE id = ?";
+    try {
+      const [result] = await db.execute(query, [id]);
+      return result;
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      throw error;
     }
   },
 };

@@ -37,3 +37,46 @@ exports.getAllCourses = async (req, res) => {
     res.status(500).json({ error: err.message }); // Error response
   }
 };
+
+exports.updateCourseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const courseData = req.body;
+
+    if (!id || Object.keys(courseData).length === 0) {
+      return res.status(400).json({ message: "Invalid request data" });
+    }
+
+    const updatedCourse = await Course.updateCourseById(id, courseData);
+
+    if (updatedCourse.affectedRows === 0) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.status(200).json({ message: "Course updated successfully" });
+  } catch (error) {
+    console.error("Error updating Course:", error);
+    res.status(500).json({ error: "Failed to update course" });
+  }
+};
+
+exports.deleteCourseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Invalid request data" });
+    }
+
+    const deletedCourse = await Course.deleteCourseById(id);
+
+    if (deletedCourse.affectedRows === 0) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.status(200).json({ message: "Course deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting Course:", error);
+    res.status(500).json({ error: "Failed to delete Course" });
+  }
+};
