@@ -35,13 +35,25 @@ const Course = {
 
     try {
       const [rows] = await db.execute(query);
-      console.log(rows);
-
       return rows;
     } catch (err) {
       throw new Error("Error fetching courses: " + err.message);
     }
   },
+  getNonAllocatedCourses: async () => {
+    const query = `SELECT c.*
+      FROM courses c
+      LEFT JOIN allocation a ON c.id = a.course_id
+      WHERE a.course_id IS NULL;
+    `;
+    try {
+      const [rows] = await db.execute(query);
+      return rows;
+    } catch (error) {
+      throw new Error("Error fetching courses: " + err.message);
+    }
+  },
+
   updateCourseById: async (id, courseData) => {
     console.log(courseData);
     const fields = Object.keys(courseData)

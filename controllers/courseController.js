@@ -27,10 +27,17 @@ exports.createCourse = async (req, res) => {
 
 exports.getAllCourses = async (req, res) => {
   try {
-    console.log("HELLOOO");
-
     const courses = await Course.getAllCourses(); // Call the model method
-    console.log(courses);
+
+    res.status(200).json(courses); // Send courses as a JSON response
+  } catch (err) {
+    res.status(500).json({ error: err.message }); // Error response
+  }
+};
+
+exports.getNonAllocatedCourses = async (req, res) => {
+  try {
+    const courses = await Course.getNonAllocatedCourses();
 
     res.status(200).json(courses); // Send courses as a JSON response
   } catch (err) {
