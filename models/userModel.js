@@ -4,7 +4,7 @@ exports.getAllFaculty = async () => {
   try {
     const query = "SELECT * FROM users1 WHERE role = 'Faculty'";
     const [rows] = await db.execute(query); // Execute the query and get rows
-    return rows; // Return the fetched rows
+    return rows;
   } catch (error) {
     throw error;
   }
@@ -14,28 +14,63 @@ exports.getFacultyById = async (facultyId) => {
   const query = "SELECT * FROM users1 WHERE id = ?";
   try {
     const [rows] = await db.execute(query, [facultyId]);
-    return rows; // Return the fetched rows
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getUserById = async (userId) => {
+  const query = "SELECT * FROM users1 WHERE id = ?";
+  try {
+    const [rows] = await db.execute(query, [userId]);
+    return rows;
   } catch (error) {
     throw error;
   }
 };
 
 exports.allocatedFaculty = async (data) => {
-  const query =
-    "INSERT INTO allocation (course_id, faculty_id, program_id) VALUES (?, ?, ?)";
-
+  const connection = await db.getConnection();
   try {
-    const [result] = await db.execute(query, [
+    await connection.beginTransaction();
+
+    // Step 1: Insert the allocation record
+    const insertQuery = `
+      INSERT INTO allocation (course_id, faculty_id, program_id) 
+      VALUES (?, ?, ?)
+    `;
+    const [insertResult] = await connection.execute(insertQuery, [
       data.course_id,
       data.faculty_id,
       data.program_id,
     ]);
 
-    return result.insertId;
+    // Step 2: Fetch the course hours for the allocated course
+    const courseQuery = "SELECT course_hours FROM courses WHERE id = ?";
+    const [courseRows] = await connection.execute(courseQuery, [
+      data.course_id,
+    ]);
+    const courseHours = courseRows[0].course_hours;
+
+    // Step 3: Update the allocated_hours for the faculty
+    const updateQuery = `
+      UPDATE users1 
+      SET allocated_hours = allocated_hours + ? 
+      WHERE id = ?
+    `;
+    await connection.execute(updateQuery, [courseHours, data.faculty_id]);
+
+    await connection.commit();
+    return insertResult.insertId;
   } catch (err) {
+    await connection.rollback(); // Rollback the transaction in case of error
     throw new Error("Error allocating faculty: " + err.message);
+  } finally {
+    connection.release();
   }
 };
+
 exports.getAllocationById = async (allocationId) => {
   const query = `
     SELECT 
