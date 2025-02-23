@@ -20,12 +20,13 @@ app.use(
   })
 );
 
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/programs", programRoutes);
-app.use("/courses", courseRoutes);
-app.use("/bulkUpload", bulkUploadRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/programs", programRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/bulkUpload", bulkUploadRoutes);
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
