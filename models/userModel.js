@@ -2,7 +2,7 @@ const db = require("../config/db.js");
 
 exports.getAllFaculty = async () => {
   try {
-    const query = "SELECT * FROM users1 WHERE role = 'Faculty'";
+    const query = "SELECT * FROM users WHERE role = 'Faculty'";
     const [rows] = await db.execute(query); // Execute the query and get rows
     return rows;
   } catch (error) {
@@ -11,7 +11,7 @@ exports.getAllFaculty = async () => {
 };
 
 exports.getFacultyById = async (facultyId) => {
-  const query = "SELECT * FROM users1 WHERE id = ?";
+  const query = "SELECT * FROM users WHERE id = ?";
   try {
     const [rows] = await db.execute(query, [facultyId]);
     return rows;
@@ -21,7 +21,7 @@ exports.getFacultyById = async (facultyId) => {
 };
 
 exports.getUserById = async (userId) => {
-  const query = "SELECT * FROM users1 WHERE id = ?";
+  const query = "SELECT * FROM users WHERE id = ?";
   try {
     const [rows] = await db.execute(query, [userId]);
     return rows;
@@ -55,7 +55,7 @@ exports.allocatedFaculty = async (data) => {
 
     // Step 3: Update the allocated_hours for the faculty
     const updateQuery = `
-      UPDATE users1 
+      UPDATE users 
       SET allocated_hours = allocated_hours + ? 
       WHERE id = ?
     `;
@@ -103,7 +103,7 @@ exports.getAllocationDetailsByFacultyId = async (facultyId) => {
       c.term_number,
       p.program_name
     FROM allocation a
-    JOIN users1 f ON a.faculty_id = f.id
+    JOIN users f ON a.faculty_id = f.id
     JOIN courses c ON a.course_id = c.id
     JOIN programs p ON a.program_id = p.program_id
     WHERE a.faculty_id = ?;
@@ -129,7 +129,7 @@ exports.getAllAllocation = async () => {
       FROM allocation a
       JOIN courses c ON a.course_id = c.id
       JOIN programs p ON c.program_id = p.program_id
-      JOIN users1 f ON a.faculty_id = f.id
+      JOIN users f ON a.faculty_id = f.id
     `;
     const [rows] = await db.execute(query);
     return rows;
@@ -139,7 +139,7 @@ exports.getAllAllocation = async () => {
 };
 exports.updateFacultyById = async (facultyId, data) => {
   const query = `
-    UPDATE users1 
+    UPDATE users 
     SET 
         first_name = ?, 
         last_name = ?, 
@@ -179,7 +179,7 @@ exports.updateFacultyById = async (facultyId, data) => {
 
 exports.deleteFacultyById = async (facultyId) => {
   const query = `
-    DELETE FROM users1 WHERE id = ? 
+    DELETE FROM users WHERE id = ? 
   `;
   try {
     const [result] = await db.execute(query, [facultyId]);

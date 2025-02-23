@@ -6,7 +6,7 @@ require("dotenv").config();
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   try {
-    const [rows] = await db.query("SELECT * FROM users1 WHERE email = ?", [
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
       username,
     ]);
 
