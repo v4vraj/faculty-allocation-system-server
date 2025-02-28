@@ -80,7 +80,7 @@ exports.getAllocationById = async (allocationId) => {
       c.course_name,
       c.course_hours
     FROM allocation a 
-    JOIN faculty f ON a.faculty_id = f.id
+    JOIN users1 f ON a.faculty_id = f.id
     JOIN courses c ON a.course_id = c.id
     WHERE a.id = ?
   `;
