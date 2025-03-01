@@ -1,6 +1,7 @@
 const multer = require("multer");
 const XLSX = require("xlsx");
 const Bulk = require("../models/BulkUploadModel.js");
+const path = require("path");
 
 // Configure Multer to store files in memory
 const storage = multer.diskStorage({
