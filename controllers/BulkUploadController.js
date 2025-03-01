@@ -3,7 +3,12 @@ const XLSX = require("xlsx");
 const Bulk = require("../models/BulkUploadModel.js");
 
 // Configure Multer to store files in memory
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: "/tmp", // Temporary folder
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
 const upload = multer({ storage });
 
 // Middleware to handle file upload
@@ -11,6 +16,10 @@ exports.uploadFile = upload.single("file");
 
 exports.processExcelFile = async (req, res) => {
   try {
+    console.log("File received on server:", req.file);
+    console.log("Request headers:", req.headers);
+    console.log("Request body:", req.body);
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
