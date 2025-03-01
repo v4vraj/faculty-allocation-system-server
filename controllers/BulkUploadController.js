@@ -1,16 +1,9 @@
 const multer = require("multer");
 const XLSX = require("xlsx");
 const Bulk = require("../models/BulkUploadModel.js");
-const path = require("path");
-const fs = require("fs");
 
-// Configure Multer to store files in /tmp
-const storage = multer.diskStorage({
-  destination: "/tmp", // Temporary directory for processing
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// Configure Multer to store files in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Middleware to handle file upload
@@ -37,16 +30,13 @@ exports.processExcelFile = async (req, res) => {
       });
     }
 
-    // Read Excel file from temporary storage
-    const workbook = XLSX.readFile(req.file.path);
+    // Read Excel file from buffer (since it's in memory)
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     let jsonData = XLSX.utils.sheet_to_json(sheet);
 
     if (jsonData.length === 0) {
-      // Delete file before returning error
-      fs.unlinkSync(req.file.path);
-
       return res.status(400).json({
         success: false,
         message: "Uploaded file is empty. Please provide valid data.",
@@ -79,9 +69,6 @@ exports.processExcelFile = async (req, res) => {
     // Insert data into the database
     const result = await Bulk.bulkInsert(type, jsonData);
 
-    // Delete file after processing
-    fs.unlinkSync(req.file.path);
-
     if (result.success) {
       return res.status(200).json({
         success: true,
@@ -99,11 +86,6 @@ exports.processExcelFile = async (req, res) => {
     });
   } catch (error) {
     console.error("Bulk insert error:", error);
-
-    // Delete the file in case of any error
-    if (req.file && req.file.path) {
-      fs.unlinkSync(req.file.path);
-    }
 
     // Handle duplicate entry error from MySQL
     if (error.code === "ER_DUP_ENTRY") {
