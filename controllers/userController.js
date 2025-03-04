@@ -115,6 +115,48 @@ exports.allocateFaculty = async (req, res) => {
   }
 };
 
+exports.createFaculty = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    username,
+    password,
+    selectedRole,
+    department,
+    selectedPosition,
+    maxHours,
+    allocatedHours,
+    hoursCompleted,
+  } = req.body;
+  try {
+    const result = await userModel.createFaculty({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      username,
+      password,
+      selectedRole,
+      department,
+      selectedPosition,
+      maxHours,
+      allocatedHours,
+      hoursCompleted,
+    });
+    res.status(201).json({
+      message: "Faculty created successfully",
+      faculty_id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error during faculty creation:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to create faculty", error: error.message });
+  }
+};
+
 exports.getAllocationDetailsByFacultyId = async (req, res) => {
   try {
     const { faculty_id } = req.params; // Extract faculty_id from request params

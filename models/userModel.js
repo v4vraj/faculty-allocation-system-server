@@ -71,6 +71,32 @@ exports.allocatedFaculty = async (data) => {
   }
 };
 
+exports.createFaculty = async (faculty) => {
+  const query = `
+      INSERT INTO users 
+      (first_name, last_name, email, phone_number, username, password, role, department, position, max_hours, allocated_hours, hours_completed, created_at, updated_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`;
+  try {
+    const [result] = await db.execute(query, [
+      faculty.firstName,
+      faculty.lastName,
+      faculty.email,
+      faculty.phoneNumber,
+      faculty.username,
+      faculty.password,
+      faculty.selectedRole,
+      faculty.department,
+      faculty.selectedPosition,
+      faculty.maxHours,
+      faculty.allocatedHours,
+      faculty.hoursCompleted,
+    ]);
+    return result;
+  } catch (error) {
+    throw new Error("Error creating faculty: " + error.message);
+  }
+};
+
 exports.getAllocationById = async (allocationId) => {
   const query = `
     SELECT 

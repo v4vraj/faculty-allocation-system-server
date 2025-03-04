@@ -8,6 +8,7 @@ router.get("/getFacultyById/:faculty_id", userController.getFacultyById);
 router.get("/getUserById/:userId", userController.getUserById);
 router.put("/updateFacultyById/:faculty_id", userController.updateFacultyById);
 router.post("/allocateFaculty", userController.allocateFaculty);
+router.post("/create-faculty", userController.createFaculty);
 router.get(
   "/getAllocationByFaculty/:faculty_id",
   userController.getAllocationDetailsByFacultyId
